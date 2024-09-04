@@ -14,7 +14,7 @@ protected:
     std::vector<value_type> u, v; // displacement and velocity; size is rows*cols
 
 public:
-    WaveOrthotope(auto rows, auto cols, auto damping_coefficient): WaveOrthotope(rows, cols, damping_coefficient, 0) { }
+    WaveOrthotope(auto rows, auto cols, auto damping_coefficient): WaveOrthotope(rows, cols, damping_coefficient, 0.0) { }
     WaveOrthotope(auto rows, auto cols, auto damping_coefficient, auto t): rows(rows), cols(cols), c(damping_coefficient), t(t) {
         dt = 0.01;
         u = std::vector(rows * cols, 0.0);
@@ -80,7 +80,7 @@ public:
         for (i = 1; i < rows - 1; ++i) {
             for (j = 1; j < cols - 1; ++j) {
                 L = (displacement(i-1, j) + displacement(i+1, j) + displacement(i, j-1) + displacement(i, j+1)) / 2.0 - 2.0 * displacement(i, j);
-                velocity(i, j) = (1 - dt * c) * velocity(i, j) + dt * L;
+                velocity(i, j) = (1.0 - dt * c) * velocity(i, j) + dt * L;
             }
         }
 
@@ -97,7 +97,7 @@ public:
 
     double solve() {
         // Consider deep copying our state instead of modifying our wave in place
-        value_type stopping_energy = (rows-2) * (cols-2) / 1000; // TODO: Consider configuring this value dynamically
+        value_type stopping_energy = (rows-2) * (cols-2) / 1000.0; // TODO: Consider configuring this value dynamically
         size_t steps = 0;
         while (energy() > stopping_energy) {
             step(dt);
