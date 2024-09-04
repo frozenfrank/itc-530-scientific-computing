@@ -103,15 +103,7 @@ public:
         size_t steps = 0;
         while (energy() > stopping_energy) {
             step(dt);
-#if DEBUG_MODE
-            if (++steps % 1000 == 0) {
-                std::cout << this->toString();
-            }
-#endif
         }
-#if DEBUG_MODE
-        std::cout << std::endl << "Stopping energy: " << stopping_energy << std::endl;
-#endif
         return sim_time();
     }
 
