@@ -1,4 +1,8 @@
 #include <vector>
+#include <sstream>
+#include <string>
+#include <iostream>
+
 
 class WaveOrthotope {
 protected:
@@ -19,6 +23,11 @@ public:
 
     auto &displacement(auto i, auto j) { return u[i*cols+j]; }
     auto &velocity(    auto i, auto j) { return v[i*cols+j]; }
+    auto &displacement(auto i, auto j) const { return u[i*cols+j]; }
+    auto &velocity(    auto i, auto j) const { return v[i*cols+j]; }
+
+    auto &numRows() const { return rows; }
+    auto &numCols() const { return cols; }
 
     auto sim_time() const { return t; }
 
@@ -33,7 +42,7 @@ public:
         }
     }
 
-    value_type energy() {
+    value_type energy() const {
         size_t i, j;
         value_type n;
         value_type E;
@@ -89,10 +98,31 @@ public:
     double solve() {
         // Consider deep copying our state instead of modifying our wave in place
         value_type stopping_energy = (rows-2) * (cols-2) / 1000; // TODO: Consider configuring this value dynamically
+        size_t steps = 0;
         while (energy() > stopping_energy) {
             step(dt);
+            ++steps;
+            if (steps % 1000 == 0) {
+                std::cout << this->toString();
+            }
         }
+        std::cout << std::endl << "Stopping energy: " << stopping_energy << std::endl;
         return sim_time();
+    }
+
+    std::string toString() const {
+        std::stringstream ss;
+        ss << (*this);
+        return ss.str();
+    }
+
+    friend std::ostream & operator<< (std::ostream &os, const WaveOrthotope &w) {
+        double energy = w.energy();
+        return
+            os << "\nTime: " << w.sim_time()
+            << "\nEnergy: " << energy
+            << "\nEnergy per interior cell: " << (energy / (w.numRows() - 2) / (w.numCols() - 2))
+            << std::endl;
     }
 };
 
