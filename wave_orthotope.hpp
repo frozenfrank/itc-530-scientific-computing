@@ -47,7 +47,7 @@ public:
     value_type energy() const {
         size_t i, j;
         value_type n;
-        value_type E;
+        value_type E = 0.0;
 
         // Dynamic energy
         for (i = 1; i < rows - 1; ++i) {
