@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 
+#define DEBUG_MODE false
+
 
 class WaveOrthotope {
 protected:
@@ -101,12 +103,15 @@ public:
         size_t steps = 0;
         while (energy() > stopping_energy) {
             step(dt);
-            ++steps;
-            if (steps % 1000 == 0) {
+#if DEBUG_MODE
+            if (++steps % 1000 == 0) {
                 std::cout << this->toString();
             }
+#endif
         }
+#if DEBUG_MODE
         std::cout << std::endl << "Stopping energy: " << stopping_energy << std::endl;
+#endif
         return sim_time();
     }
 
