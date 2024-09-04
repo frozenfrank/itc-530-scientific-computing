@@ -6,15 +6,15 @@ protected:
     const size_t rows, cols;  // size
     const value_type c;           // damping coefficient
     value_type t;                 // simulation time
+    value_type dt;                // time step size in simulation
     std::vector<value_type> u, v; // displacement and velocity; size is rows*cols
 
 public:
-    WaveOrthotope(auto rows, auto cols, auto damping_coefficient) {
-        WaveOrthotope(rows, cols, damping_coefficient, 0)
-    }
+    WaveOrthotope(auto rows, auto cols, auto damping_coefficient): WaveOrthotope(rows, cols, damping_coefficient, 0) { }
     WaveOrthotope(auto rows, auto cols, auto damping_coefficient, auto t): rows(rows), cols(cols), c(damping_coefficient), t(t) {
-        u = vector(rows * cols, 0.0);
-        v = vector(rows * cols, 0.0);
+        dt = 0.01;
+        u = std::vector(rows * cols, 0.0);
+        v = std::vector(rows * cols, 0.0);
     }
 
     auto &displacement(auto i, auto j) { return u[i*cols+j]; }
@@ -86,7 +86,7 @@ public:
         return t;
     }
 
-    double solve(value_type dt) {
+    double solve() {
         // Consider deep copying our state instead of modifying our wave in place
         value_type stopping_energy = (rows-2) * (cols-2) / 1000; // TODO: Consider configuring this value dynamically
         while (energy() > stopping_energy) {

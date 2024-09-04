@@ -7,7 +7,7 @@ int main() {
     auto c = 0.01;
     auto w = WaveOrthotope(rows, cols, c);
     w.initInterior(0.0, 0.1);
-    w.solve(0.01);
+    w.solve();
     std::cout << w.sim_time() << std::endl;
     return 0;
 }
