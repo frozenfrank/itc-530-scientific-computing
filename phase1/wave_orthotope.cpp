@@ -73,3 +73,19 @@ WaveOrthotope::value_type WaveOrthotope::solve() {
     }
     return sim_time();
 }
+
+
+std::string WaveOrthotope::toString() const {
+    std::stringstream ss;
+    ss << (*this);
+    return ss.str();
+}
+
+std::ostream & operator<< (std::ostream &os, const WaveOrthotope &w) {
+    double energy = w.energy();
+    return
+        os << "\nTime: " << w.sim_time()
+        << "\nEnergy: " << energy
+        << "\nEnergy per interior cell: " << (energy / (w.numRows() - 2) / (w.numCols() - 2))
+        << std::endl;
+}
