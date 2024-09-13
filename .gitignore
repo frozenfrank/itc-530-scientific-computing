@@ -1,0 +1,7 @@
+*
+!*.*
+!*/
+# Above combo ignores all executable files
+
+# IDE Files
+.vscode/
