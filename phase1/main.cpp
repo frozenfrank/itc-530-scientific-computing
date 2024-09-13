@@ -1,5 +1,5 @@
 #include <iostream>
-#include "wave_orthotope.cpp"
+#include "wave_orthotope.hpp"
 
 int main() {
     // Create WaveOrthotope
