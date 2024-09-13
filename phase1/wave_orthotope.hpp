@@ -99,7 +99,7 @@ public:
 
     double solve() {
         // Consider deep copying our state instead of modifying our wave in place
-        value_type stopping_energy = (rows-2) * (cols-2) / 1000; // TODO: Consider configuring this value dynamically
+        value_type stopping_energy = (rows-2) * (cols-2) / 1000.0; // TODO: Consider configuring this value dynamically
         size_t steps = 0;
         while (energy() > stopping_energy) {
             step(dt);
