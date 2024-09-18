@@ -1,6 +1,6 @@
 #include "wave_orthotope.hpp"
 
-void WaveOrthotope::initInterior(double d, double v) {
+void WaveOrthotope::initInterior(WaveOrthotope::value_type d, WaveOrthotope::value_type v) {
     // CONSIDER: Extracting out this interior looping code to a private function accepting a lambda expression
     size_t i, j;
     for (i = 1; i < rows - 1; ++i) {
@@ -13,8 +13,8 @@ void WaveOrthotope::initInterior(double d, double v) {
 
 WaveOrthotope::value_type WaveOrthotope::energy() const {
     size_t i, j;
-    double n;
-    double E = 0.0;
+    WaveOrthotope::value_type n;
+    WaveOrthotope::value_type E = 0.0;
 
     // Dynamic energy
     for (i = 1; i < rows - 1; ++i) {
@@ -45,7 +45,7 @@ WaveOrthotope::value_type WaveOrthotope::step(double dt) {
     size_t i, j;
 
     // Update velocity
-    double L;
+    WaveOrthotope::value_type L;
     for (i = 1; i < rows - 1; ++i) {
         for (j = 1; j < cols - 1; ++j) {
             L = (displacement(i-1, j) + displacement(i+1, j) + displacement(i, j-1) + displacement(i, j+1)) / 2.0 - 2.0 * displacement(i, j);
@@ -66,7 +66,7 @@ WaveOrthotope::value_type WaveOrthotope::step(double dt) {
 
 WaveOrthotope::value_type WaveOrthotope::solve() {
     // Consider deep copying our state instead of modifying our wave in place
-    double stopping_energy = (rows-2) * (cols-2) / 1000.0; // TODO: Consider configuring this value dynamically
+    WaveOrthotope::value_type stopping_energy = (rows-2) * (cols-2) / 1000.0; // TODO: Consider configuring this value dynamically
     size_t steps = 0;
     while (energy() > stopping_energy) {
         step(dt);
