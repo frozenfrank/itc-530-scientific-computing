@@ -1,0 +1,1 @@
+export PATH="~/itc530/wavefiles/bin/:$PATH"

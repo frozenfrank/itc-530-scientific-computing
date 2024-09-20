@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
         // Read file
         auto w = WaveOrthotope(infile);
         print("Succesfully read wave ", infile);
+        std::cout << w << std::endl;
 
         // Solve
         w.solve();

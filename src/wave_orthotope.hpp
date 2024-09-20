@@ -15,8 +15,8 @@
 class WaveOrthotope {
 protected:
     using value_type = double;
-    size_t ndims = 2;               // Number of dimensions
-    size_t rows, cols;              // size
+    unsigned long int ndims = 2;               // Number of dimensions
+    unsigned long int rows, cols;              // size
     value_type c;                   // damping coefficient
     value_type t;                   // simulation time
     value_type dt = 0.01;           // time step size in simulation
@@ -27,11 +27,13 @@ protected:
         ndims = try_read_bytes<decltype(ndims)>(s);
         if (ndims != 2) handle_wrong_dimensions();
 
-        unsigned long wave_size = 0;
-        try_read_bytes(s, &wave_size);
-        rows = cols = wave_size; // Only handle square waves
-        c = try_read_bytes(s);
-        t = try_read_bytes(s);
+        try_read_bytes(s, &rows);
+        try_read_bytes(s, &cols);
+        try_read_bytes(s, &c);
+        try_read_bytes(s, &t);
+
+        u = std::vector<value_type>(rows * cols);
+        v = std::vector<value_type>(rows * cols);
 
         try_read_bytes(s, u.data(), u.size());
         try_read_bytes(s, v.data(), v.size());
@@ -60,7 +62,7 @@ public:
     WaveOrthotope(auto rows, auto cols, auto damping_coefficient, auto t)
         : rows(rows), cols(cols), c(damping_coefficient), t(t), u(rows * cols, 0.0), v(rows * cols, 0.0) { }
 
-    // Read a MountainRange from a file, handling read errors gracefully
+    // Read a WaveOrthotope from a file, handling read errors gracefully
     WaveOrthotope(const char *filename) {
         try {
             WaveOrthotope(std::ifstream(filename));
