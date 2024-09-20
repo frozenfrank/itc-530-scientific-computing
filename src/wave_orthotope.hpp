@@ -15,8 +15,8 @@
 class WaveOrthotope {
 protected:
     using value_type = double;
-    unsigned long int ndims = 2;               // Number of dimensions
-    unsigned long int rows, cols;              // size
+    size_t ndims = 2;               // Number of dimensions
+    size_t rows, cols;              // size
     value_type c;                   // damping coefficient
     value_type t;                   // simulation time
     value_type dt = 0.01;           // time step size in simulation
