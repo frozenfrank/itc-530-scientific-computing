@@ -23,18 +23,14 @@ protected:
     std::vector<value_type> u, v;   // displacement and velocity; size is rows*cols
 
     // Read in a MountainRange from a stream
-    WaveOrthotope(std::istream &&s) {
-        ndims = try_read_bytes<decltype(ndims)>(s);
-        if (ndims != 2) handle_wrong_dimensions();
-
-        try_read_bytes(s, &rows);
-        try_read_bytes(s, &cols);
-        try_read_bytes(s, &c);
-        try_read_bytes(s, &t);
-
-        u = std::vector<value_type>(rows * cols);
-        v = std::vector<value_type>(rows * cols);
-
+    WaveOrthotope(std::istream &&s): ndims{try_read_bytes<decltype(ndims)>(s)},
+                                     rows{try_read_bytes<decltype(rows)>(s)},
+                                     cols{try_read_bytes<decltype(cols)>(s)},
+                                     c{try_read_bytes<decltype(c)>(s)},
+                                     t{try_read_bytes<decltype(t)>(s)},
+                                     u(rows*cols),
+                                     v(rows*cols) {
+        // Read in u and v
         try_read_bytes(s, u.data(), u.size());
         try_read_bytes(s, v.data(), v.size());
     }
@@ -63,15 +59,13 @@ public:
         : rows(rows), cols(cols), c(damping_coefficient), t(t), u(rows * cols, 0.0), v(rows * cols, 0.0) { }
 
     // Read a WaveOrthotope from a file, handling read errors gracefully
-    WaveOrthotope(const char *filename) {
-        try {
-            WaveOrthotope(std::ifstream(filename));
-        } catch (const std::ios_base::failure &e) {
-            handle_read_failure(filename);
-        } catch (const std::filesystem::filesystem_error &e) {
-            handle_read_failure(filename);
-        }
-    }
+    WaveOrthotope(const char *filename) try: WaveOrthotope(std::ifstream(filename)) {
+                                        } catch (const std::ios_base::failure &e) {
+                                            handle_read_failure(filename);
+                                        } catch (const std::filesystem::filesystem_error &e) {
+                                            handle_read_failure(filename);
+                                        }
+
 
     auto &displacement(auto i, auto j) { return u[i*cols+j]; }
     auto &velocity(    auto i, auto j) { return v[i*cols+j]; }
@@ -100,7 +94,7 @@ public:
 
         try {
             // Write the header
-            try_write_bytes(f, &ndims, &rows, &t);
+            try_write_bytes(f, &ndims, &rows, &cols, &t);
 
             // Write the body
             try_write_bytes(f, u.data(), u.size());
