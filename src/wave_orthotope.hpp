@@ -109,6 +109,9 @@ public:
             handle_write_failure(filename);
         }
     }
+
+protected:
+    int getCheckpointInterval();
 };
 
 // // Example velocity function usage:

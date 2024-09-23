@@ -1,4 +1,8 @@
+#include <stdlib.h>
+#include <format>
+#include <math.h>
 #include "wave_orthotope.hpp"
+
 
 void WaveOrthotope::initInterior(WaveOrthotope::value_type d, WaveOrthotope::value_type v) {
     // CONSIDER: Extracting out this interior looping code to a private function accepting a lambda expression
@@ -67,11 +71,21 @@ WaveOrthotope::value_type WaveOrthotope::step(double dt) {
 WaveOrthotope::value_type WaveOrthotope::solve() {
     // Consider deep copying our state instead of modifying our wave in place
     WaveOrthotope::value_type stopping_energy = (rows-2) * (cols-2) / 1000.0; // TODO: Consider configuring this value dynamically
-    size_t steps = 0;
+    int interval = getCheckpointInterval();
     while (energy() > stopping_energy) {
         step(dt);
+        if (interval > 0 && fmod(t+0.002, interval) < 0.004) {
+            auto check_file_name = std::format("chk-{:07.2f}.wo", t);
+            write(check_file_name.c_str());
+        }
     }
     return sim_time();
+}
+
+int WaveOrthotope::getCheckpointInterval() {
+    char* intvl = getenv("INTVL");
+    if (intvl == NULL) return 0;
+    return std::stoi(intvl);
 }
 
 
