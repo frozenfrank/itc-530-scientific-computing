@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
         // Write result
         w.write(outfile);
-        print("Successfully wrote wave", outfile);
+        print("Successfully wrote wave ", outfile);
 
         // Successfully solved wave!
         return 0;

@@ -94,7 +94,7 @@ public:
 
         try {
             // Write the header
-            try_write_bytes(f, &ndims, &rows, &cols, &t);
+            try_write_bytes(f, &ndims, &rows, &cols, &c, &t);
 
             // Write the body
             try_write_bytes(f, u.data(), u.size());
