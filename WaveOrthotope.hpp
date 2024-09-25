@@ -1,0 +1,192 @@
+#include <vector>
+#include <iostream>
+#include <tuple>
+#include <filesystem>
+#include <vector>
+#include <fstream>
+#include <charconv>
+#include <cstring>
+#include <cmath>
+#include <limits>
+#include "binary_io.hpp"
+
+class WaveOrthotope
+{
+protected:
+    size_t rows, cols;  // size
+    double c;           // damping coefficient
+    double t;                 // simulation time
+    std::vector<double> u, v; // displacement and velocity; size is rows*cols
+    double dt = 0.01;
+    unsigned long N = 2;      // # of dimensions
+    std::vector<double> m;    // Wave orthotope size array
+
+
+
+
+public:
+    // Constructor
+    WaveOrthotope( double r, double c, double damping_coefficient)
+            : rows(r), cols(c), c(damping_coefficient), t(0.0), u(r * c, 0.0), v(r * c, 0.0), N(2), m(2){}
+
+    auto &displacement(double i, double j) { return u[i*cols+j]; }
+    auto &velocity(    double i, double j) { return v[i*cols+j]; }
+
+    auto sim_time() const { return t; }
+
+
+    // Read in error messages
+    static void handle_wrong_dimensions() {
+        throw std::logic_error("Input file is corrupt or multi-dimensional, which this implementation doesn't support");
+    }
+
+    static void handle_wrong_file_size() {
+        throw std::logic_error("Input file appears to be corrupt");
+    }
+
+    static void handle_write_failure(const char *const filename) {
+        throw std::logic_error("Failed to write to " + std::string(filename));
+    }
+
+    static void handle_read_failure(const char *const filename) {
+        throw std::logic_error("Failed to read from " + std::string(filename));
+    }
+
+
+    // Read in a WaveOrthotope from a stream
+    WaveOrthotope(std::istream &&s): N{try_read_bytes<decltype(N)>(s)},
+                                     m(N)
+    {
+
+        try_read_bytes(s, m.data(), m.size());
+        u.resize (m[0] * m[1]);
+        v.resize (m[0] * m[1]);
+        c = try_read_bytes <decltype(c)>(s);
+        t = try_read_bytes <decltype(t)>(s);
+
+        // Handle nonsense
+        if (N != 2) handle_wrong_dimensions();
+
+        // Read in r and h
+        try_read_bytes(s, u.data(), u.size());
+        try_read_bytes(s, v.data(), v.size());
+    }
+
+    // Read a WaveOrthotope from a file, handling read errors gracefully
+    explicit WaveOrthotope(const char *filename) try: WaveOrthotope(std::ifstream(filename)) {
+    } catch (const std::ios_base::failure &e) {
+        handle_read_failure(filename);
+    } catch (const std::filesystem::filesystem_error &e) {
+        handle_read_failure(filename);
+    }
+
+
+    // Write a WaveOrthotope to a file, handling write errors gracefully
+    virtual void write(const char *filename) const {
+        // Open the file
+        auto f = std::ofstream(filename);
+
+        try {
+            // Write the header
+            try_write_bytes(f, &N, &m, &t);
+
+            // Write the body
+            try_write_bytes(f, u.data(), u.size());
+            try_write_bytes(f, v.data(), v.size());
+
+            // Handle write failures
+        } catch (const std::filesystem::filesystem_error &e) {
+            handle_write_failure(filename);
+        } catch (const std::ios_base::failure &e) {
+            handle_write_failure(filename);
+        }
+    }
+    // Done Fixing //
+
+
+    double energy()
+    {
+        //implimented from Julia code
+
+        //Dynamic Energy
+        double E = 0.0;
+
+
+        for (size_t i = 1; i<rows-1; ++i)
+        {
+            for (size_t j = 1; j<cols-1; ++j)
+            {
+                E += (velocity(i,j) * velocity(i,j) / 2.0);
+            }
+        }
+
+        //Potential Energy
+        double n;
+        for (size_t i = 0; i<rows-1; ++i)
+        {
+            for (size_t j = 1; j<cols-1; ++j)
+            {
+                n = displacement(i,j) - displacement(i+1,j);
+                E += n * n / 4.0;
+            }
+        }
+
+        for (size_t i = 1; i<rows-1; ++i)
+        {
+            for (size_t j = 0; j<cols-1; ++j)
+            {
+                n = displacement(i,j)- displacement(i,j+1);
+                E += n * n / 4.0;
+            }
+        }
+
+        return E;
+
+    }
+
+
+
+    void step()
+    {
+        // implimented from Julia code
+
+        //Update v
+        double L;
+        for (size_t i = 1; i<rows-1; ++i)
+        {
+            for (size_t j = 1; j<cols-1; ++j)
+            {
+                L = (displacement(i-1,j) + displacement(i+1,j) + displacement(i,j-1) + displacement(i,j+1)) / 2.0 - 2.0 * displacement(i,j);
+                velocity(i,j) = (1 - dt * c) * velocity(i,j) + dt * L;
+
+            }
+        }
+
+        //Update u
+        for (size_t i = 1; i<rows-1; ++i)
+        {
+            for (size_t j = 1; j<cols-1; ++j)
+            {
+                displacement(i,j) += velocity(i,j) * dt;
+            }
+        }
+        t+=dt;
+
+    }
+
+    void solve()
+    {
+        //implimented from Julia code
+        //Copy vectors
+
+        auto stop_energy = (rows - 2) * (cols - 2) / 1000.0;
+
+        //Solve
+        while (energy() > stop_energy)
+        {
+            step();
+        }
+
+
+    }
+};
