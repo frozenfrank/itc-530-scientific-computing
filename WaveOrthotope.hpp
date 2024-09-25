@@ -13,12 +13,12 @@
 class WaveOrthotope
 {
 protected:
+    unsigned long N = 2;      // # of dimensions
     size_t rows, cols;  // size
     double c;           // damping coefficient
     double t;                 // simulation time
     std::vector<double> u, v; // displacement and velocity; size is rows*cols
     double dt = 0.01;
-    unsigned long N = 2;      // # of dimensions
     std::vector<double> m;    // Wave orthotope size array
 
 
@@ -55,19 +55,21 @@ public:
 
     // Read in a WaveOrthotope from a stream
     WaveOrthotope(std::istream &&s): N{try_read_bytes<decltype(N)>(s)},
-                                     m(N)
+                                     rows{try_read_bytes<decltype(rows)>(s)},
+                                     cols{try_read_bytes<decltype(cols)>(s)},
+                                     c{try_read_bytes<decltype(c)>(s)},
+                                     t{try_read_bytes<decltype(t)>(s)},
+                                     u(rows*cols),
+                                     v(rows*cols)
+                                    
+                                    
     {
 
-        try_read_bytes(s, m.data(), m.size());
-        u.resize (m[0] * m[1]);
-        v.resize (m[0] * m[1]);
-        c = try_read_bytes <decltype(c)>(s);
-        t = try_read_bytes <decltype(t)>(s);
 
         // Handle nonsense
         if (N != 2) handle_wrong_dimensions();
 
-        // Read in r and h
+        // Read in u and v
         try_read_bytes(s, u.data(), u.size());
         try_read_bytes(s, v.data(), v.size());
     }
@@ -88,7 +90,7 @@ public:
 
         try {
             // Write the header
-            try_write_bytes(f, &N, &m, &t);
+            try_write_bytes(f, &N, &rows, &cols, &c,  &t);
 
             // Write the body
             try_write_bytes(f, u.data(), u.size());

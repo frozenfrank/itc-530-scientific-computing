@@ -22,7 +22,7 @@ int main(int argc, char **argv)
         print(MtnRange::help_message);
 #endif
         print("`", argv[0], " --help` prints this message.");
-    };
+    }; //
 
     // Parse
     if (argc > 1 && (std::string(argv[1]) == std::string("-h") || std::string(argv[1]) == std::string("--help"))) {
