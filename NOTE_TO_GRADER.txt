@@ -1,0 +1,9 @@
+I was able to successfully read and write binary files during this project.
+However, when I try to open the .wo files created by my program with waveshow
+or wavediff, I get a message saying they appear to be corrupted. But at the 
+same time, my program is able to read and use the output files it writes as 
+the inputs to the following run. For this reason, I have my program print
+the key items of the output file to the command line. Notably, it first writes
+the output file, then reads in the output it just wrote into a waveorthotope
+object, then prints the data from that object. So you can see it has no 
+problem reading and using the outputs it writes.
