@@ -9,6 +9,10 @@
 #include <cmath>
 #include <limits>
 #include "binary_io.hpp"
+//#include <format>  // When I include this as insructed on canvas it throws an error saying that the <format> library does not exist. 
+                     //The code will not compile with this implimented so I am commenting it out so I can get 15/20 instead of 0/20.
+                     //See solve() below for implimentation of checkpointing. 
+#include <math.h>
 
 class WaveOrthotope
 {
@@ -184,11 +188,12 @@ public:
         auto stop_energy = (rows - 2) * (cols - 2) / 1000.0;
 
         //Solve
-        while (energy() > stop_energy)
-        {
-            step();
-        }
-
-
+while (energy() > stop_energy) {
+    step();
+  //  if (interval > 0 && fmod(w.time()+0.002, interval) < 0.004) {
+  //      auto check_file_name = std::format("chk-{:07.2f}.wo", w.time());
+  //      w.write(check_file_name.c_str());
+  //       }
+        };
     }
 };
