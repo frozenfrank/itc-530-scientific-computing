@@ -128,25 +128,22 @@ public:
         }
 
         //Potential Energy
-        double n;
-        #pragma omp parallel for reduction(+:E)
-        for (size_t i = 0; i<rows-1; ++i)
-        {
-            for (size_t j = 1; j<cols-1; ++j)
-            {
-                n = displacement(i,j) - displacement(i+1,j);
+    #pragma omp parallel for reduction(+:E)
+    for (size_t i = 0; i < rows - 1; ++i) {
+        for (size_t j = 0; j < cols - 1; ++j) {
+            // Vertical differences
+            if (j > 0) {
+                double n = displacement(i, j) - displacement(i + 1, j);
+                E += n * n / 4.0;
+            }
+
+            // Horizontal differences
+            if (i > 0) {
+                double n = displacement(i, j) - displacement(i, j + 1);
                 E += n * n / 4.0;
             }
         }
-        #pragma omp parallel for reduction(+:E)
-        for (size_t i = 1; i<rows-1; ++i)
-        {
-            for (size_t j = 0; j<cols-1; ++j)
-            {
-                n = displacement(i,j)- displacement(i,j+1);
-                E += n * n / 4.0;
-            }
-        }
+    }
 
         return E;
 
@@ -172,7 +169,7 @@ public:
         }
 
         //Update u
-        #pragma omp parallel for
+       #pragma omp parallel for
         for (size_t i = 1; i<rows-1; ++i)
         {
             for (size_t j = 1; j<cols-1; ++j)
@@ -197,6 +194,7 @@ public:
                 interval = std::stoi(Interval_String);
             }
         //Solve
+ 
 while (energy() > stop_energy) {
     step();
    
