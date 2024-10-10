@@ -18,10 +18,7 @@ int main(int argc, char **argv)
     auto help = [=](){
         print("Usage: ", argv[0], " infile outfile");
         print("Read a wave from infile, solve it, and write it to outfile.");
-#ifdef USE_THREAD
-        print(MtnRange::help_message);
-#endif
-        print("`", argv[0], " --help` prints this message.");
+
     }; //
 
     // Parse

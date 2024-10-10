@@ -30,7 +30,7 @@ protected:
 
 public:
     // Constructor
-    WaveOrthotope( double r, double c, double damping_coefficient)
+    WaveOrthotope(const double &r, const double &c, const double &damping_coefficient)
             : rows(r), cols(c), c(damping_coefficient), t(0.0), u(r * c, 0.0), v(r * c, 0.0), N(2), m(2){}
 
     auto &displacement(double i, double j) { return u[i*cols+j]; }
@@ -48,11 +48,11 @@ public:
         throw std::logic_error("Input file appears to be corrupt");
     }
 
-    static void handle_write_failure(const char *const filename) {
+    static void handle_write_failure(const char *const &filename) {
         throw std::logic_error("Failed to write to " + std::string(filename));
     }
 
-    static void handle_read_failure(const char *const filename) {
+    static void handle_read_failure(const char *const &filename) {
         throw std::logic_error("Failed to read from " + std::string(filename));
     }
 
@@ -115,9 +115,10 @@ public:
         //implimented from Julia code
 
         //Dynamic Energy
+        
         double E = 0.0;
 
-
+        #pragma omp parallel for reduction(+:E)
         for (size_t i = 1; i<rows-1; ++i)
         {
             for (size_t j = 1; j<cols-1; ++j)
@@ -128,6 +129,7 @@ public:
 
         //Potential Energy
         double n;
+        #pragma omp parallel for reduction(+:E)
         for (size_t i = 0; i<rows-1; ++i)
         {
             for (size_t j = 1; j<cols-1; ++j)
@@ -136,7 +138,7 @@ public:
                 E += n * n / 4.0;
             }
         }
-
+        #pragma omp parallel for reduction(+:E)
         for (size_t i = 1; i<rows-1; ++i)
         {
             for (size_t j = 0; j<cols-1; ++j)
@@ -158,6 +160,7 @@ public:
 
         //Update v
         double L;
+        #pragma omp parallel for
         for (size_t i = 1; i<rows-1; ++i)
         {
             for (size_t j = 1; j<cols-1; ++j)
@@ -169,6 +172,7 @@ public:
         }
 
         //Update u
+        #pragma omp parallel for
         for (size_t i = 1; i<rows-1; ++i)
         {
             for (size_t j = 1; j<cols-1; ++j)
@@ -186,13 +190,17 @@ public:
         //Copy vectors
 
         auto stop_energy = (rows - 2) * (cols - 2) / 1000.0;
-
+        char *Interval_String = getenv("INTVL");
+        int interval = 0; 
+    
+         if (Interval_String != nullptr){
+                interval = std::stoi(Interval_String);
+            }
         //Solve
 while (energy() > stop_energy) {
     step();
-    char *Interval_String = getenv("INTVL");
-    int interval = std::stoi(Interval_String);
-
+   
+    
   if (interval > 0 && fmod(sim_time()+0.002, interval) < 0.004) {
         auto check_file_name = std::format("chk-{:07.2f}.wo", sim_time());
         write(check_file_name.c_str());
