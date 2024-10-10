@@ -1,0 +1,112 @@
+Eliminating Unnecessary Work
+1.How much of a speedup do you get after changing the laplacian to take x by const reference? 
+Why do you think it’s so dramatic?
+    
+    When x was not passed to the laplacian by constant reference, the times were as follows:
+    real    20.649s
+    user    20.575s
+    sys     0.001s
+    
+    And afer changing it so x is passed to the laplacian by const reference the times were:
+    real    0.178s
+    user    0.174s
+    sys     0.002s
+
+    These changes are so dramatic because when x is not passed by constant reference,
+    the program makes a copy of x each time the laplacian function is called. The 
+    larger x is, the longer this takes. In contrast, if x is passed by constant 
+    reference, the program has the laplacian function refer to the memory location
+    of the already existant x and use the values there instead of making a copy
+    of the values for itself.
+
+-----set rows to 800, output is now 5.39------
+
+2. Fix any other functions and loops that should take arguements by constant reference.
+    How much of a speedup do these changes yield? Why isn't it as significant?
+
+    Time before changes:
+    real    13.943s
+    user    10.091s
+    sys     3.791s
+
+    Time after changes:
+    real    6.622s
+    user    6.590s
+    sys     0.008s
+
+    The further changes resulted in a roughly 50% decrease in time. While significant
+    It is not as big a reduction as the first time which reduced the time by about 99%.
+    I think the reason the first change was more significant than subsequent ones
+    is the frequency with which the laplacian was called and the size of the x matrix being
+    passed to the function. 
+
+Cache Efficiency
+
+How much faster does optimize run after changing the program so loops iterate over i then j?
+Why?
+
+    Time before changes:
+    real    6.622s
+    user    6.590s
+    sys     0.008s
+
+    Time after changes:
+    real    3.129s
+    user    3.110s
+    sys     0.008s
+
+ Again, these changes produced about a 50% reduction in time. I think this is because
+of how vectors are used in this program. u and v are both vectors made up of vectors
+made up of numbers. So as its coded, u[i][j] refers to the jth index of the ith 
+vector in u. So when the loops iterate over j first then i, for each step in the function,
+the program has to switch vectors from the ith vector to the i+1 vector. In contrast,
+when we iterate over i first, then j, the program performs all the operations over all
+the indices of the ith vector before switching to the i+1 vector. This likely allows
+the i vector to be stored in the cache where as before, the cache  had to be updated
+with the new vector every step.
+
+Vectorization
+
+    Times after adding -Ofast
+    real    2.615s
+    user    2.598s
+    sys     0.005s
+
+    Times after changing the indices and commenting out the if statements
+    real    1.386s
+    user    1.370s
+    sys     0.008s
+
+    After adding the vectorization flag, updating the indices, and commenting out the 
+    if-continue statements, I saw another 50% decrease in time required. I think this
+    is because using the correct indices instead of an if-statement means the program
+    isn't using processing power to check the if statement at each step in the loop.
+
+Threading
+    
+    Times with 2 threads
+    real    0.724s
+    user    1.424s
+    sys     0.010s
+
+    Times with 4 threads
+    real    0.378s
+    user    1.462s
+    sys     0.016s
+
+    Times with 8 threads
+    real    0.211s
+    user    1.574s
+    sys     0.022s
+
+    Times with 2 threads
+    real    0.134s
+    user    1.928s
+    sys     0.040s
+    
+    I think the diminishment of returns is so severe because as the number
+of threads increases, so does the processing power required to coordinate
+the work between those threads. So while there is a net benefit, it decreases
+when more threads are added.
+
+
