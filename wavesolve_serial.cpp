@@ -237,13 +237,8 @@ public:
         for (int i = 0; i<wdims[0]; i++){
             for (int j=0; j<wdims[1]; j++){
 
-                if (i == 0 && j ==0){
+                write_bytes(outs, &wv[i][j]);
 
-                }else{
-
-                    write_bytes(outs, &wv[i][j]);
-
-                }
             }
         }
 
@@ -307,15 +302,8 @@ void read_data(string filename) {
     for (int i = 0; i<dims[0];i++) {
         for (int j = 0; j<dims[1];j++) {
 
-            if (i == 0 && j ==0){
+            read_bytes(rawdata, &v[i][j]);
 
-                v[i][j] = 0.0; //hacky fix but my array was off by 1 for some reason
-
-            } else {
-
-                read_bytes(rawdata, &v[i][j]);
-
-            }
         }
     }
 
