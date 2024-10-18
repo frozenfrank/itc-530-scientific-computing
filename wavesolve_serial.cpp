@@ -15,7 +15,7 @@ class waveorthotope {
 public:
 
     waveorthotope(int N_in, vector<int> dims_in, double c_in, double t_in, vector<vector<double>> u_in, vector<vector<double>> v_in){
-        
+
         wN = N_in;
         wdims = dims_in;
         wc = c_in;
@@ -54,7 +54,7 @@ public:
 
         read_bytes(rawdata, &junk);
 
-        double t; 
+        double t;
 
         read_bytes(rawdata, &t);
 
@@ -232,7 +232,7 @@ public:
         write_bytes(outs, &wN);
 
         int junk = 0;
-        
+
         for (int i = 0; i<wN; i++){
             write_bytes(outs, &junk);
             write_bytes(outs, &wdims[i]);
@@ -276,7 +276,7 @@ public:
         outs.close();
 
     }
-    
+
 
 
 private:
@@ -285,7 +285,7 @@ private:
     vector<int> wdims;   //Wave orthotope size array
 
     double wc;           //damping coefficient
-    double wt;           //Simulation time    
+    double wt;           //Simulation time
 
     vector<vector<double>> wu;
     vector<vector<double>> wv;
@@ -323,7 +323,7 @@ void read_data(string filename) {
 
     read_bytes(rawdata, &junk);
 
-    double t; 
+    double t;
 
     read_bytes(rawdata, &t);
 
@@ -358,7 +358,7 @@ void read_data(string filename) {
 
         }
     }
-    
+
     waveorthotope output(N, dims, c, t, u, v);
 
     /*
