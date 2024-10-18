@@ -355,6 +355,8 @@ int main(int argc, char* argv[]){
 
     wave.write2bin(outputfile);
 
+    /*
+
     waveorthotope wave2(outputfile);
 
     cout << "N: " << wave2.get_N() << endl;
@@ -379,6 +381,8 @@ int main(int argc, char* argv[]){
         }
         cout << endl;
     }
+
+    */
 
     return 0;
 }
