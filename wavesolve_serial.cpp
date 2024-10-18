@@ -14,7 +14,7 @@ class waveorthotope {
 
 public:
 
-    waveorthotope(int N_in, vector<int> dims_in, double c_in, double t_in, vector<vector<double>> u_in, vector<vector<double>> v_in){
+    waveorthotope(unsigned long N_in, vector<unsigned long> dims_in, double c_in, double t_in, vector<vector<double>> u_in, vector<vector<double>> v_in){
 
         wN = N_in;
         wdims = dims_in;
@@ -29,36 +29,26 @@ public:
 
         ifstream rawdata(filename);
 
-        int N;
+        unsigned long N;
 
         read_bytes(rawdata, &N); //get number of dimensions
 
-        //int dims[N];
-        vector<int> dims(N,0);
-
-        int junk = 0;
+        //unsigned long dims[N];
+        vector<unsigned long> dims(N,0);
 
         for (int i=0; i<N; i++){
-
-            read_bytes(rawdata, &junk);
 
             read_bytes(rawdata, &dims[i]);
 
         }
 
-        read_bytes(rawdata, &junk);
-
         double c;
 
         read_bytes(rawdata, &c);
 
-        read_bytes(rawdata, &junk);
-
         double t;
 
         read_bytes(rawdata, &t);
-
-        read_bytes(rawdata, &junk);
 
         vector<vector<double>> u(dims[0], vector<double>(dims[1]));
         vector<vector<double>> v(dims[0], vector<double>(dims[1]));
@@ -67,8 +57,6 @@ public:
             for (int j = 0; j<dims[1];j++) {
 
                 read_bytes(rawdata, &u[i][j]);
-
-                //read_bytes(rawdata, &junk);
 
             }
         }
@@ -85,8 +73,6 @@ public:
                     read_bytes(rawdata, &v[i][j]);
 
                 }
-                //read_bytes(rawdata, &junk);
-
             }
         }
 
@@ -99,17 +85,17 @@ public:
 
     }
 
-    vector<int> get_dims() {return wdims;}
+    vector<unsigned long> get_dims() {return wdims;}
     double get_c() {return wc;}
     double get_t() {return wt;}
     vector<vector<double>> get_u() {return wu;}
     vector<vector<double>> get_v() {return wv;}
-    int get_N() {return wN;}
+    unsigned long get_N() {return wN;}
 
     void step() {
 
-        int nrow = wu.size();
-        int ncol = wu[0].size();
+        unsigned long nrow = wu.size();
+        unsigned long ncol = wu[0].size();
 
         double L = 0.0;
 
@@ -135,8 +121,8 @@ public:
 
     double energy(){
 
-        int nrow = wu.size();
-        int ncol = wu[0].size();
+        unsigned long nrow = wu.size();
+        unsigned long ncol = wu[0].size();
 
         double E = 0.0;
 
@@ -174,8 +160,8 @@ public:
 
     double solve(){
 
-        int nrow = wu.size();
-        int ncol = wu[0].size();
+        unsigned long nrow = wu.size();
+        unsigned long ncol = wu[0].size();
 
         double stop_E = (nrow-2) * (ncol-2) / 1000.0;
 
@@ -231,23 +217,13 @@ public:
 
         write_bytes(outs, &wN);
 
-        int junk = 0;
-
         for (int i = 0; i<wN; i++){
-            write_bytes(outs, &junk);
             write_bytes(outs, &wdims[i]);
         }
 
-        write_bytes(outs, &junk);
-
         write_bytes(outs, &wc);
 
-        write_bytes(outs, &junk);
-
         write_bytes(outs, &wt);
-
-        write_bytes(outs, &junk);
-
 
 
         for (int i = 0; i<wdims[0]; i++){
@@ -271,8 +247,6 @@ public:
             }
         }
 
-        write_bytes(outs, &junk); //another hacky fix but it works.
-
         outs.close();
 
     }
@@ -281,8 +255,8 @@ public:
 
 private:
 
-    int wN;              //Number of dimensions
-    vector<int> wdims;   //Wave orthotope size array
+    unsigned long wN;              //Number of dimensions
+    vector<unsigned long> wdims;   //Wave orthotope size array
 
     double wc;           //damping coefficient
     double wt;           //Simulation time
@@ -298,36 +272,26 @@ void read_data(string filename) {
 
     ifstream rawdata(filename);
 
-    int N;
+    unsigned long N;
 
     read_bytes(rawdata, &N); //get number of dimensions
 
-    //int dims[N];
-    vector<int> dims(N,0);
-
-    int junk = 0;
+    //unsigned long dims[N];
+    vector<unsigned long> dims(N,0);
 
     for (int i=0; i<N; i++){
-
-        read_bytes(rawdata, &junk);
 
         read_bytes(rawdata, &dims[i]);
 
     }
 
-    read_bytes(rawdata, &junk);
-
     double c;
 
     read_bytes(rawdata, &c);
 
-    read_bytes(rawdata, &junk);
-
     double t;
 
     read_bytes(rawdata, &t);
-
-    read_bytes(rawdata, &junk);
 
     vector<vector<double>> u(dims[0], vector<double>(dims[1]));
     vector<vector<double>> v(dims[0], vector<double>(dims[1]));
@@ -336,8 +300,6 @@ void read_data(string filename) {
         for (int j = 0; j<dims[1];j++) {
 
             read_bytes(rawdata, &u[i][j]);
-
-            //read_bytes(rawdata, &junk);
 
         }
     }
@@ -354,8 +316,6 @@ void read_data(string filename) {
                 read_bytes(rawdata, &v[i][j]);
 
             }
-            //read_bytes(rawdata, &junk);
-
         }
     }
 
