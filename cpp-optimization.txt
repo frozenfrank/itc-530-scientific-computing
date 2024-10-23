@@ -144,3 +144,53 @@ Other Optimizations
         I was very supprosed by how much of a differant making this constant references made.
         It was also very cool to see how threading works and the power of multiple cores.
         
+
+
+
+        ***New Changes to Code from Group Optiization***
+
+We tried passing in the transpose of u instead of using u[i][j+1] in the step function because adding 1 to j will cause the program to pull two values from memory that are not close together. 
+In order to do this though we had to initialize whole new vector, u_transpose, which made the code slower despite accessing u[i][j+1] in a more efficient manner. 
+
+We pulled energy_floor(u) out of the while loop in main() so that energy floor does not have to be calculated every time. 
+This did not yield much of a speed up but I still got the correct result.
+Output: 5.39
+
+real    0m0.250s
+user    0m1.875s
+sys     0m0.027s
+
+I also tried changing u.size() and u.front().size() in every location that it is called to a variable called rows that is just the number of rows in the matrix. 
+This should have helped a little because instead of checking the rows of u every time it can just use constant reference rows. 
+I got very little speed up but after timing it several times it seems like it runs a little faster but not much
+Output: 5.39
+
+real    0m0.247s
+user    0m1.860s
+sys     0m0.020s 
+
+
+After talking to my teammates I also decided to remove std::pow() from my code and just manually multiply them.
+This had little impact. I think that this is becasue at this point I am already threading so I'm not eliminating that much compute time.
+Output: 5.39
+
+real    0m0.248s
+user    0m1.863s
+sys     0m0.020s
+
+
+
+
+Running through CMakeLists with -Ofast -DNDEBUG -fopenmp
+Output: 5.39
+
+real    0m0.155s
+user    0m1.087s
+sys     0m0.018s
+
+I added #pragma omp parallel for in front of the for loop in the main() function and it didn't seem to speed up much.
+Output: 5.39
+
+real    0m0.162s
+user    0m1.132s
+sys     0m0.027s
