@@ -184,22 +184,6 @@ public:
         ostringstream placehold;
 
 
-
-        while (energy() > inter_NRG){
-
-            step();
-            wt += dt;
-            step();
-            wt += dt;
-            step();
-            wt += dt;
-            step();
-            wt += dt;
-            step();
-            wt += dt;
-
-        }
-
         while (energy() > stop_E){
 
             step();
