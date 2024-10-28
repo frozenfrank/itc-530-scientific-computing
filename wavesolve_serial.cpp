@@ -176,13 +176,8 @@ public:
         double inter_NRG = (energy() - stop_E)*0.1 + stop_E;
 
         auto s_intvl = getenv("INTVL");
+        double intvl = (s_intvl != nullptr) ? stof(s_intvl) : 0;
 
-        double intvl;
-        if(s_intvl != nullptr){
-            intvl = stof(s_intvl);
-        } else {
-            intvl = 0;
-        }
 
         string chkname;
 
