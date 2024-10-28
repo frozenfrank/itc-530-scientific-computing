@@ -190,13 +190,15 @@ public:
                 step();
                 wt += dt;
 
-                if (fabs(1.0 - wt / intvl) < 0.002 && count>1){
+                if (fabs(fmod(wt+0.002,intvl)) < 0.004 && count>1){
 
                     placehold.str("");
 
-                    placehold << fixed << setprecision(2) << setw(6) << setfill('0') << wt;
+                    placehold << fixed << setprecision(2) << setw(7) << setfill('0') << wt;
 
                     chkname = "chk-" + placehold.str() + ".wo";
+
+                    //chkname = format("chk-{:07.2f}.wo", get_t());
 
                     write2bin(chkname);
 
