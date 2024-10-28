@@ -278,72 +278,6 @@ private:
 
 };
 
-void read_data(string filename) {
-
-    ifstream rawdata(filename);
-
-    unsigned long N;
-
-    read_bytes(rawdata, &N); //get number of dimensions
-
-    //unsigned long dims[N];
-    vector<unsigned long> dims(N,0);
-
-    for (int i=0; i<N; i++){
-
-        read_bytes(rawdata, &dims[i]);
-
-    }
-
-    double c;
-
-    read_bytes(rawdata, &c);
-
-    double t;
-
-    read_bytes(rawdata, &t);
-
-    vector<vector<double>> u(dims[0], vector<double>(dims[1]));
-    vector<vector<double>> v(dims[0], vector<double>(dims[1]));
-
-    for (int i = 0; i<dims[0];i++) {
-        for (int j = 0; j<dims[1];j++) {
-
-            read_bytes(rawdata, &u[i][j]);
-
-        }
-    }
-
-    for (int i = 0; i<dims[0];i++) {
-        for (int j = 0; j<dims[1];j++) {
-
-            read_bytes(rawdata, &v[i][j]);
-
-        }
-    }
-
-    waveorthotope output(N, dims, c, t, u, v);
-
-    /*
-    cout << "ndims: " << N << endl;
-    cout << "nrows: " << dims[0] << endl;
-    cout << "ncols: " << dims[1] << endl;
-    cout << "c: " << c << endl;
-    cout << "t: " << t << endl;
-
-
-    for (int i = 0; i<dims[0];i++) {
-        for (int j = 0; j<dims[1];j++) {
-
-            cout << v[i][j] << " ";
-
-        }
-        cout << endl;
-    }
-    */
-
-}
-
 
 
 int main(int argc, char* argv[]){
@@ -351,22 +285,9 @@ int main(int argc, char* argv[]){
     string inputfile = argv[1];
     string outputfile = argv[2];
 
-    //cout << "Input name: " << inputfile << endl;
-    //cout << "Output name: " << outputfile << endl;
-
-    read_data(inputfile);
 
     waveorthotope wave(inputfile);
 
-    //double intvl = stof(getenv("INTVL"));
-
-    //auto s_intvl = getenv("INTVL_");
-
-    //if (s_intvl != nullptr){cout << s_intvl <<endl;}
-
-    //else{cout << "Variable does not exist" << endl;}
-
-    //wave.write2bin("infile.i");
 
     wave.solve();
 
