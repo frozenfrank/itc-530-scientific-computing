@@ -64,6 +64,7 @@ public:
         for (int i = 0; i<dims[0];i++) {
             for (int j = 0; j<dims[1];j++) {
 
+                /*
                 if (i == 0 && j ==0){
 
                     v[i][j] = 0.0; //hacky fix but my array was off by 1 for some reason
@@ -73,6 +74,11 @@ public:
                     read_bytes(rawdata, &v[i][j]);
 
                 }
+                */
+
+                read_bytes(rawdata, &v[i][j]);
+
+
             }
         }
 
@@ -102,9 +108,9 @@ public:
         for (int i=1; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                L = (wu[i-1][j] + wu[i+1][j] + wu[i][j-1] + wu[i][j+1]) / 2 - 2 * wu[i][j];
+                L = (wu[i-1][j] + wu[i+1][j] + wu[i][j-1] + wu[i][j+1]) / 2.0 - 2.0 * wu[i][j];
 
-                wv[i][j] = (1 - dt * wc) * wv[i][j] + dt * L;
+                wv[i][j] = (1.0 - dt * wc) * wv[i][j] + dt * L;
 
             }
         }
@@ -141,7 +147,7 @@ public:
         for (int i=0; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                E += pow((wu[i][j]-wu[i+1][j]),2) / 4.0;
+                E += pow((wu[i][j]-wu[i+1][j]),2.0) / 4.0;
 
             }
         }
@@ -150,7 +156,7 @@ public:
         for (int i=1; i<nrow-1; i++) {
             for (int j=0; j<ncol-1; j++) {
 
-                E += pow((wu[i][j]-wu[i][j+1]),2) / 4.0;
+                E += pow((wu[i][j]-wu[i][j+1]),2.0) / 4.0;
 
             }
         }
@@ -168,6 +174,8 @@ public:
         auto s_intvl = getenv("INTVL");
 
         int count = 0;
+
+        double inter_NRG = (energy() - stop_E)*0.1 + stop_E;
 
         if (s_intvl != nullptr){
 
@@ -199,11 +207,25 @@ public:
         }
         else{
 
+            while (energy() > inter_NRG){
+
+                step();
+                wt += dt;
+                step();
+                wt += dt;
+                step();
+                wt += dt;
+                step();
+                wt += dt;
+                step();
+                wt += dt;
+
+            }
+
             while (energy() > stop_E){
 
                 step();
                 wt += dt;
-
             }
 
         }
@@ -350,6 +372,8 @@ int main(int argc, char* argv[]){
     //if (s_intvl != nullptr){cout << s_intvl <<endl;}
 
     //else{cout << "Variable does not exist" << endl;}
+
+    //wave.write2bin("infile.i");
 
     wave.solve();
 
