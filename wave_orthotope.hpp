@@ -263,7 +263,7 @@ public:
 
 
 
-private:
+protected:
 
     unsigned long wN;              //Number of dimensions
     vector<unsigned long> wdims;   //Wave orthotope size array
