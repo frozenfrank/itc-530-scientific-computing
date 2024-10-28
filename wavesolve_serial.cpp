@@ -171,66 +171,62 @@ public:
 
         double stop_E = (nrow-2) * (ncol-2) / 1000.0;
 
-        auto s_intvl = getenv("INTVL");
-
         int count = 0;
 
         double inter_NRG = (energy() - stop_E)*0.1 + stop_E;
 
-        if (s_intvl != nullptr){
+        auto s_intvl = getenv("INTVL");
 
-            double intvl = stof(s_intvl);
-
-            string chkname;
-
-            ostringstream placehold;
-
-            while (energy() > stop_E){
-
-                step();
-                wt += dt;
-
-                if (fabs(fmod(wt+0.002,intvl)) < 0.004 && count>1){
-
-                    placehold.str("");
-
-                    placehold << fixed << setprecision(2) << setw(7) << setfill('0') << wt;
-
-                    chkname = "chk-" + placehold.str() + ".wo";
-
-                    //chkname = format("chk-{:07.2f}.wo", get_t());
-
-                    write2bin(chkname);
-
-                }
-
-                count++;
-            }
+        double intvl;
+        if(s_intvl != nullptr){
+            intvl = stof(s_intvl);
+        } else {
+            intvl = 0;
         }
-        else{
 
-            while (energy() > inter_NRG){
+        string chkname;
 
-                step();
-                wt += dt;
-                step();
-                wt += dt;
-                step();
-                wt += dt;
-                step();
-                wt += dt;
-                step();
-                wt += dt;
+        ostringstream placehold;
 
-            }
 
-            while (energy() > stop_E){
 
-                step();
-                wt += dt;
-            }
+        while (energy() > inter_NRG){
+
+            step();
+            wt += dt;
+            step();
+            wt += dt;
+            step();
+            wt += dt;
+            step();
+            wt += dt;
+            step();
+            wt += dt;
 
         }
+
+        while (energy() > stop_E){
+
+            step();
+            wt += dt;
+
+            if (intvl>0 && fabs(fmod(wt+0.002,intvl)) < 0.004 && count>1){
+
+                placehold.str("");
+
+                placehold << fixed << setprecision(2) << setw(7) << setfill('0') << wt;
+
+                chkname = "chk-" + placehold.str() + ".wo";
+
+                //chkname = format("chk-{:07.2f}.wo", get_t());
+
+                write2bin(chkname);
+
+            }
+
+            count++;
+        }
+
         return wt;
 
     }
