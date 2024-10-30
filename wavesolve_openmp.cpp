@@ -15,6 +15,8 @@ public:
         //int nrow = wu.size();
         //int ncol = wu[0].size();
 
+        //cout << "step" << endl;
+
         double L = 0.0;
 
         #pragma omp parallel for
@@ -44,6 +46,8 @@ public:
         //int nrow = wu.size();
         //int ncol = wu[0].size();
 
+        //cout << "energy" << endl;
+
         double E = 0.0;
 
         //Dynamic
@@ -61,7 +65,7 @@ public:
         for (int i=0; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                E += pow((wu[i][j]-wu[i+1][j]),2) / 4.0;
+                E += pow((wu[i][j]-wu[i+1][j]),2.0) / 4.0;
 
             }
         }
@@ -70,7 +74,7 @@ public:
         for (int i=1; i<nrow-1; i++) {
             for (int j=0; j<ncol-1; j++) {
 
-                E += pow((wu[i][j]-wu[i][j+1]),2) / 4.0;
+                E += pow((wu[i][j]-wu[i][j+1]),2.0) / 4.0;
 
             }
         }
@@ -78,10 +82,36 @@ public:
         return E;
     }
 
-private:
+double solve(){
+
+        //unsigned long nrow = wu.size();
+        //unsigned long ncol = wu[0].size();
+
+        double stop_E = (nrow-2) * (ncol-2) / 1000.0;
+
+        count = 0;
+
+        double inter_NRG = (energy() - stop_E)*0.1 + stop_E;
+
+        auto s_intvl = getenv("INTVL");
+        intvl = (s_intvl != nullptr) ? stof(s_intvl) : 0;
 
 
+        while (energy() > stop_E){
 
+            step();
+            wt += dt;
+
+            checkpoint();
+
+            count++;
+        }
+
+        return wt;
+
+    }
+
+private:  
 
 
 };
@@ -103,7 +133,6 @@ int main(int argc, char* argv[]){
     //cout << "m: " << wave2.get_dims()[0] << " " << wave2.get_dims()[1] << endl;
     //cout << "c: " << wave2.get_c() << endl;
     //cout << "t: " << wave2.get_t() << endl;
-
 
 
     return 0;

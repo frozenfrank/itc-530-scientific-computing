@@ -164,6 +164,28 @@ public:
         return E;
     }
 
+    void checkpoint(){
+
+        if (intvl>0 && fabs(fmod(wt+0.002,intvl)) < 0.004 && count>1){
+
+            string chkname;
+
+            ostringstream placehold;
+
+            placehold.str("");
+
+            placehold << fixed << setprecision(2) << setw(7) << setfill('0') << wt;
+
+            chkname = "chk-" + placehold.str() + ".wo";
+
+            //chkname = format("chk-{:07.2f}.wo", get_t());
+
+            write2bin(chkname);
+
+            }
+
+    }
+
     double solve(){
 
         //unsigned long nrow = wu.size();
@@ -171,17 +193,12 @@ public:
 
         double stop_E = (nrow-2) * (ncol-2) / 1000.0;
 
-        int count = 0;
+        count = 0;
 
         double inter_NRG = (energy() - stop_E)*0.1 + stop_E;
 
         auto s_intvl = getenv("INTVL");
-        double intvl = (s_intvl != nullptr) ? stof(s_intvl) : 0;
-
-
-        string chkname;
-
-        ostringstream placehold;
+        intvl = (s_intvl != nullptr) ? stof(s_intvl) : 0;
 
 
         while (energy() > stop_E){
@@ -189,19 +206,7 @@ public:
             step();
             wt += dt;
 
-            if (intvl>0 && fabs(fmod(wt+0.002,intvl)) < 0.004 && count>1){
-
-                placehold.str("");
-
-                placehold << fixed << setprecision(2) << setw(7) << setfill('0') << wt;
-
-                chkname = "chk-" + placehold.str() + ".wo";
-
-                //chkname = format("chk-{:07.2f}.wo", get_t());
-
-                write2bin(chkname);
-
-            }
+            checkpoint();
 
             count++;
         }
@@ -262,5 +267,10 @@ protected:
 
     unsigned long nrow;
     unsigned long ncol;
+
+    int count;
+
+    double intvl;
+    
 
 };
