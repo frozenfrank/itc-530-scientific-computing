@@ -88,6 +88,8 @@ public:
         wt = t;
         wu = u;
         wv = v;
+        nrow = dims[0];
+        ncol = dims[1];
 
     }
 
@@ -100,8 +102,8 @@ public:
 
     void step() {
 
-        unsigned long nrow = wu.size();
-        unsigned long ncol = wu[0].size();
+        //unsigned long nrow = wu.size();
+        //unsigned long ncol = wu[0].size();
 
         double L = 0.0;
 
@@ -127,12 +129,10 @@ public:
 
     double energy(){
 
-        unsigned long nrow = wu.size();
-        unsigned long ncol = wu[0].size();
+        //unsigned long nrow = wu.size();
+        //unsigned long ncol = wu[0].size();
 
         double E = 0.0;
-
-        int count = 0;
 
         //Dynamic
         for (int i=1; i<nrow-1; i++) {
@@ -166,8 +166,8 @@ public:
 
     double solve(){
 
-        unsigned long nrow = wu.size();
-        unsigned long ncol = wu[0].size();
+        //unsigned long nrow = wu.size();
+        //unsigned long ncol = wu[0].size();
 
         double stop_E = (nrow-2) * (ncol-2) / 1000.0;
 
@@ -259,5 +259,8 @@ protected:
     vector<vector<double>> wv;
 
     double dt = 0.01;
+
+    unsigned long nrow;
+    unsigned long ncol;
 
 };
