@@ -9,13 +9,35 @@
 #include <cmath>
 #include <limits>
 #include "binary_io.hpp"
-#include <format>  // When I include this as insructed on canvas it throws an error saying that the <format> library does not exist. 
-                     //The code will not compile with this implimented so I am commenting it out so I can get 15/20 instead of 0/20.
-                     //See solve() below for implimentation of checkpointing. 
+#include <format> 
 #include <math.h>
+
+
+// Namespace for split_range, which is used by both std::jthread and MPI implementations
+namespace mr {
+    // Divide [0, n) evenly among size processes, returning the range appropriate for rank [0, size).
+    // Example: divide 100 cells among 3 threads, ignoring the first and last cells since they aren't updated:
+    //   - split_range(100, 0, 3) -> [0, 34]
+    //   - split_range(100, 1, 3) -> [34, 67]
+    //   - split_range(100, 2, 3) -> [67, 100]
+    auto split_range(auto n, auto rank, auto size) {
+        auto n_per_proc = n / size;
+        decltype(rank) extra = n % size;
+        auto first = n_per_proc * rank + std::min(rank, extra);
+        auto last = first + n_per_proc;
+        if (rank < extra) {
+            last += 1;
+        }
+        return std::array{first, last};
+    }
+}
 
 class WaveOrthotope
 {
+public:
+    using size_type  = size_t;
+    using value_type = double;
+    
 protected:
     unsigned long N = 2;      // # of dimensions
     size_t rows, cols;  // size
@@ -24,8 +46,6 @@ protected:
     std::vector<double> u, v; // displacement and velocity; size is rows*cols
     double dt = 0.01;
     std::vector<double> m;    // Wave orthotope size array
-
-
 
 
 public:
