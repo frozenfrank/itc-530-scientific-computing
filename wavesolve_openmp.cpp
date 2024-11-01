@@ -17,15 +17,13 @@ public:
 
         //cout << "step" << endl;
 
-        double L = 0.0;
+
 
         #pragma omp parallel for
         for (int i=1; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                L = (wu[i-1][j] + wu[i+1][j] + wu[i][j-1] + wu[i][j+1]) / 2.0 - 2.0 * wu[i][j];
-
-                wv[i][j] = (1.0 - dt * wc) * wv[i][j] + dt * L;
+                wv[i][j] = (1.0 - dt * wc) * wv[i][j] + dt * ((wu[i-1][j] + wu[i+1][j] + wu[i][j-1] + wu[i][j+1]) / 2.0 - 2.0 * wu[i][j]);
 
             }
         }
@@ -111,7 +109,7 @@ double solve(){
 
     }
 
-private:  
+private:
 
 
 };
