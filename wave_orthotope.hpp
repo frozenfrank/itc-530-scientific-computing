@@ -91,6 +91,22 @@ public:
         nrow = dims[0];
         ncol = dims[1];
 
+        vector<double> u_inline(dims[0]*dims[1]);
+        vector<double> v_inline(dims[0]*dims[1]);
+
+        for (int i = 0; i<dims[0];i++) {
+            for (int j = 0; j<dims[1];j++) {
+
+                u_inline[i*ncol+j] = u[i][j];
+                v_inline[i*ncol+j] = v[i][j];
+
+
+            }
+        }
+
+        wu_inline=u_inline;
+        wv_inline=v_inline;
+
     }
 
     vector<unsigned long> get_dims() {return wdims;}
@@ -99,6 +115,8 @@ public:
     vector<vector<double>> get_u() {return wu;}
     vector<vector<double>> get_v() {return wv;}
     unsigned long get_N() {return wN;}
+    auto &displacement(auto i, auto j) { return wu_inline[i*ncol+j]; }
+    auto &velocity(    auto i, auto j) { return wv_inline[i*ncol+j]; }
 
     void step() {
 
@@ -205,7 +223,6 @@ public:
 
             step();
             wt += dt;
-
             checkpoint();
 
             count++;
@@ -233,7 +250,7 @@ public:
         for (int i = 0; i<wdims[0]; i++){
             for (int j=0; j<wdims[1]; j++){
 
-                write_bytes(outs, &wu[i][j]);
+                write_bytes(outs, &displacement(i,j));
 
             }
         }
@@ -241,7 +258,7 @@ public:
         for (int i = 0; i<wdims[0]; i++){
             for (int j=0; j<wdims[1]; j++){
 
-                write_bytes(outs, &wv[i][j]);
+                write_bytes(outs, &velocity(i,j));
 
             }
         }
@@ -263,6 +280,9 @@ protected:
     vector<vector<double>> wu;
     vector<vector<double>> wv;
 
+    vector<double>wu_inline;
+    vector<double>wv_inline;
+
     double dt = 0.01;
 
     unsigned long nrow;
@@ -271,6 +291,6 @@ protected:
     int count;
 
     double intvl;
-    
+
 
 };
