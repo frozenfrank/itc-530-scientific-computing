@@ -12,20 +12,20 @@ public:
 
     void step() {
 
-        //int nrow = wu.size();
-        //int ncol = wu[0].size();
+        //int nrow = displacement(size();
+        //int ncol = displacement(0].size();
 
         //cout << "step" << endl;
 
         double L = 0.0;
 
-        #pragma omp parallel for
+        #pragma omp parallel for private(L)
         for (int i=1; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                L = (wu[i-1][j] + wu[i+1][j] + wu[i][j-1] + wu[i][j+1]) / 2.0 - 2.0 * wu[i][j];
+                L = (displacement(i-1, j) + displacement(i+1, j) + displacement(i, j-1) + displacement(i, j+1)) / 2.0 - 2.0 * displacement(i, j);
 
-                wv[i][j] = (1.0 - dt * wc) * wv[i][j] + dt * L;
+                velocity(i, j) = (1.0 - dt * wc) * velocity(i, j) + dt * L;
 
             }
         }
@@ -34,7 +34,7 @@ public:
         for (int i=1; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                wu[i][j] = wu[i][j] + wv[i][j] * dt;
+                displacement(i, j) = displacement(i, j) + velocity(i, j) * dt;
 
             }
         }
@@ -43,8 +43,8 @@ public:
 
     double energy(){
 
-        //int nrow = wu.size();
-        //int ncol = wu[0].size();
+        //int nrow = displacement(size();
+        //int ncol = displacement(0].size();
 
         //cout << "energy" << endl;
 
@@ -55,7 +55,7 @@ public:
         for (int i=1; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                E += (wv[i][j] * wv[i][j]) / 2.0;
+                E += (velocity(i, j) * velocity(i, j)) / 2.0;
 
             }
         }
@@ -65,7 +65,7 @@ public:
         for (int i=0; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                E += pow((wu[i][j]-wu[i+1][j]),2.0) / 4.0;
+                E += pow((displacement(i, j)-displacement(i+1, j)),2.0) / 4.0;
 
             }
         }
@@ -74,7 +74,7 @@ public:
         for (int i=1; i<nrow-1; i++) {
             for (int j=0; j<ncol-1; j++) {
 
-                E += pow((wu[i][j]-wu[i][j+1]),2.0) / 4.0;
+                E += pow((displacement(i, j)-displacement(i, j+1)),2.0) / 4.0;
 
             }
         }
@@ -84,8 +84,8 @@ public:
 
 double solve(){
 
-        //unsigned long nrow = wu.size();
-        //unsigned long ncol = wu[0].size();
+        //unsigned long nrow = displacement(size();
+        //unsigned long ncol = displacement(0].size();
 
         double stop_E = (nrow-2) * (ncol-2) / 1000.0;
 
@@ -101,8 +101,8 @@ double solve(){
 
             step();
             wt += dt;
-
             checkpoint();
+
 
             count++;
         }
@@ -111,7 +111,7 @@ double solve(){
 
     }
 
-private:  
+private:
 
 
 };
