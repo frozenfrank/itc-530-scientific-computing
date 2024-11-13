@@ -1,9 +1,0 @@
-Similarly to phase 2, running waveshow or similar on my program's output binary will
-result in a message saying the file is corrupted. I'm still not sure why this is
-but, my program is able to read the checkpoints and outputs it writes. To show this,
-after my program solves the wave orthotope, it writes to the user specified out file
-then reads that same out file it just wrote into a 2nd wave orthotope object. 
-It then takes that 2nd wave orthotope and prints the values for N, m, time, etc. 
-In phase two, I had it output the resulting u and v matrices as well but this proved
-too long for the timed simulations. I commented out those portions but you can uncomment
-them on lines 421 and line 439 if you want to see.

@@ -9,6 +9,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG" CACHE STRING "Flags used by the CX
 
 add_executable(wavesolve_serial wavesolve_serial.cpp binary_io.hpp wave_orthotope.hpp)
 add_executable(wavesolve_openmp wavesolve_openmp.cpp binary_io.hpp wave_orthotope.hpp)
+add_executable(wavesolve_mpi wavesolve_mpi.cpp binary_io.hpp wave_orthotope.hpp)
 target_link_libraries(wavesolve_openmp PRIVATE OpenMP::OpenMP_CXX)
 add_executable(optimize optimize.cpp)
 target_link_libraries(optimize PRIVATE OpenMP::OpenMP_CXX)
