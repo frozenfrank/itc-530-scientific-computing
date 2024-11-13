@@ -1,6 +1,7 @@
 
 #include "wave_orthotope.hpp"
 #include "binary_io.hpp"
+#include <mpl/mpl.hpp>
 
 using namespace std;
 
@@ -8,7 +9,10 @@ class waveorthotope_mpi : public waveorthotope {
 
 public:
 
-
+    // MPI-related members (initialized at the bottom of this file)
+    static mpl::communicator comm_world; //from MountainRangeMPI.hpp
+    static const int comm_rank; //from MountainRangeMPI.hpp
+    static const int comm_size; //from MountainRangeMPI.hpp
 
     void step() {
 
@@ -77,7 +81,7 @@ public:
         return E;
     }
 
-double solve(){
+    double solve(){
 
         //unsigned long nrow = displacement(size();
         //unsigned long ncol = displacement(0].size();
@@ -111,6 +115,12 @@ private:
 
 };
 
+//Next 4 lines copied from example code
+// Initialize static MPI-related members
+mpl::communicator waveorthotope_mpi::comm_world = mpl::environment::comm_world();
+const int waveorthotope_mpi::comm_rank = mpl::environment::comm_world().rank();
+const int waveorthotope_mpi::comm_size = mpl::environment::comm_world().size();
+
 int main(int argc, char* argv[]){
 
     string inputfile = argv[1];
@@ -118,16 +128,11 @@ int main(int argc, char* argv[]){
 
     waveorthotope_mpi wave(inputfile);
 
-    wave.solve();
+    //wave.solve();
 
-    wave.write2bin(outputfile);
+    //wave.write2bin(outputfile);
 
-    //waveorthotope wave2(outputfile);
-
-    //cout << "N: " << wave2.get_N() << endl;
-    //cout << "m: " << wave2.get_dims()[0] << " " << wave2.get_dims()[1] << endl;
-    //cout << "c: " << wave2.get_c() << endl;
-    //cout << "t: " << wave2.get_t() << endl;
+   
 
 
     return 0;
