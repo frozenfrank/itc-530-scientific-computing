@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG" CACHE STRING "Flags used by the CX
 
 if(MPI_CXX_FOUND)
     find_package(mpl REQUIRED)
-    add_executable(wavesolve_mpi wavesolve_mpi.cpp binary_io.hpp wave_orthotope.hpp)
+    add_executable(wavesolve_mpi wavesolve_mpi.cpp binary_io.hpp wave_orthotope_mpi.hpp)
     target_link_libraries(wavesolve_mpi PRIVATE MPI::MPI_CXX)
     target_link_libraries(wavesolve_mpi PRIVATE mpl::mpl)
 endif()
