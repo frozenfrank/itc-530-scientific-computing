@@ -42,28 +42,34 @@ public:
 
     waveorthotope(string filename){
 
-        ifstream rawdata(filename);
+        auto f = mpl::file(comm_world, filename, mpl::file::access_mode::read_only);
 
         unsigned long N;
 
-        read_bytes(rawdata, &N); //get number of dimensions
+        f.read_all(N);
 
-        //unsigned long dims[N];
+        cout << N << endl;
+
         vector<unsigned long> dims(N,0);
 
         for (int i=0; i<N; i++){
 
-            read_bytes(rawdata, &dims[i]);
+            f.read_all(dims[i]);
+
+            cout << dims[i] << endl;
 
         }
 
         double c;
 
-        read_bytes(rawdata, &c);
+        f.read_all(c);
 
         double t;
 
-        read_bytes(rawdata, &t);
+        f.read_all(t);
+
+        cout << c << endl;
+        cout << t << endl;
 
         vector<vector<double>> u(dims[0], vector<double>(dims[1]));
         vector<vector<double>> v(dims[0], vector<double>(dims[1]));
@@ -71,32 +77,32 @@ public:
         for (int i = 0; i<dims[0];i++) {
             for (int j = 0; j<dims[1];j++) {
 
-                read_bytes(rawdata, &u[i][j]);
+                f.read_all(u[i][j]);
+
+                cout << u[i][j] << " ";
 
             }
+            cout << endl;
         }
+
+        cout <<endl;
 
         for (int i = 0; i<dims[0];i++) {
             for (int j = 0; j<dims[1];j++) {
 
-                /*
-                if (i == 0 && j ==0){
 
-                    v[i][j] = 0.0; //hacky fix but my array was off by 1 for some reason
+                //read_bytes(rawdata, &v[i][j]);
+                f.read_all(v[i][j]);
 
-                } else {
-
-                    read_bytes(rawdata, &v[i][j]);
-
-                }
-                */
-
-                read_bytes(rawdata, &v[i][j]);
+                cout << v[i][j] << " ";
 
 
             }
-        }
 
+            cout <<endl;
+        }
+        
+        
         wN = N;
         wdims = dims;
         wc = c;
@@ -121,7 +127,7 @@ public:
 
         wu_inline=u_inline;
         wv_inline=v_inline;
-
+        
     }
 
     // MPI-related members (initialized at the bottom of this file)
