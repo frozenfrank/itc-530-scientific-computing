@@ -48,7 +48,7 @@ public:
 
         f.read_all(N);
 
-        cout << N << endl;
+        //cout << N << endl;
 
         vector<unsigned long> dims(N,0);
 
@@ -56,7 +56,7 @@ public:
 
             f.read_all(dims[i]);
 
-            cout << dims[i] << endl;
+            //cout << dims[i] << endl;
 
         }
 
@@ -68,8 +68,8 @@ public:
 
         f.read_all(t);
 
-        cout << c << endl;
-        cout << t << endl;
+        //cout << c << endl;
+        //cout << t << endl;
 
         vector<vector<double>> u(dims[0], vector<double>(dims[1]));
         vector<vector<double>> v(dims[0], vector<double>(dims[1]));
@@ -79,13 +79,13 @@ public:
 
                 f.read_all(u[i][j]);
 
-                cout << u[i][j] << " ";
+                //cout << u[i][j] << " ";
 
             }
-            cout << endl;
+            //cout << endl;
         }
 
-        cout <<endl;
+        //cout <<endl;
 
         for (int i = 0; i<dims[0];i++) {
             for (int j = 0; j<dims[1];j++) {
@@ -94,12 +94,12 @@ public:
                 //read_bytes(rawdata, &v[i][j]);
                 f.read_all(v[i][j]);
 
-                cout << v[i][j] << " ";
+                //cout << v[i][j] << " ";
 
 
             }
 
-            cout <<endl;
+            //cout <<endl;
         }
         
         
