@@ -52,7 +52,7 @@ class wavesolvethreaded: public WaveOrthotope {
             "Set the environment variable SOLVER_NUM_THREADS to a positive integer to set thread count (default 1).";
 
 
-
+public:
     // Run base constructor, then build threading infrastructure
     wavesolvethreaded(auto &&...args): WaveOrthotope(args...), // https://tinyurl.com/byusc-parpack
             continue_iteration{true},
@@ -97,8 +97,8 @@ class wavesolvethreaded: public WaveOrthotope {
             }
                 // calculations
 
-                this.ds_aggregator += E;
-                this.ds_barrier.arrive_and_wait();
+                ds_aggregator += E;
+                ds_barrier.arrive_and_wait();
                 return true;
             })),
             step_workers(looping_threadpool(nthreads, [this](auto tid){ // https://tinyurl.com/byusc-lambda
@@ -126,7 +126,9 @@ class wavesolvethreaded: public WaveOrthotope {
                 }
                 step_barrier.arrive_and_wait();
                 return true;
-            }))
+            })) {
+
+            }
 
 
 
