@@ -67,8 +67,8 @@ class wavesolvethreaded: public WaveOrthotope {
             ds_workers(looping_threadpool(nthreads, [this](auto tid){ // https://tinyurl.com/byusc-lambda
                 ds_barrier.arrive_and_wait();
                 if (!continue_iteration) return false;
-                auto [first, last] = this_thread_cell_range(tid); 
-                auto gfirst = tid==0 ? 1 : first; 
+                auto [first, last] = this_thread_cell_range(tid);
+                auto gfirst = tid==0 ? 1 : first;
                 auto glast  = tid==nthreads-1 ? last-1 : last;
                 value_type E = 0;
                 for (size_t i = gfirst; i<glast; ++i)
@@ -92,7 +92,7 @@ class wavesolvethreaded: public WaveOrthotope {
 
                 double n = displacement(i, j) - displacement(i, j + 1);
                 E += n * n / 4.0;
-            
+
             }
             }
                 // calculations
@@ -125,7 +125,7 @@ class wavesolvethreaded: public WaveOrthotope {
                 }
                 step_barrier.arrive_and_wait();
                 return true;
-            })) 
+            }))
 
 
 
@@ -142,12 +142,12 @@ class wavesolvethreaded: public WaveOrthotope {
     value_type energy() override {
         // Reset reduction destination
         ds_aggregator = 0;
-        
+
         // Launch workers
         ds_barrier.arrive_and_wait();
 
         // Wait for workers to finish this iteration
-        ds_barrier.arrive_and_wait(); 
+        ds_barrier.arrive_and_wait();
 
         return ds_aggregator;
     }

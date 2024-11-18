@@ -9,7 +9,7 @@
 #include <cmath>
 #include <limits>
 #include "binary_io.hpp"
-#include <format> 
+#include <format>
 #include <math.h>
 
 
@@ -37,7 +37,7 @@ class WaveOrthotope
 public:
     using size_type  = size_t;
     using value_type = double;
-    
+
 protected:
     unsigned long N = 2;      // # of dimensions
     size_t rows, cols;  // size
@@ -85,8 +85,8 @@ public:
                                      t{try_read_bytes<decltype(t)>(s)},
                                      u(rows*cols),
                                      v(rows*cols)
-                                    
-                                    
+
+
     {
 
 
@@ -135,7 +135,7 @@ public:
         //implimented from Julia code
 
         //Dynamic Energy
-        
+
         double E = 0.0;
 
         #pragma omp parallel for reduction(+:E)
@@ -208,17 +208,17 @@ public:
 
         auto stop_energy = (rows - 2) * (cols - 2) / 1000.0;
         char *Interval_String = getenv("INTVL");
-        int interval = 0; 
-    
+        int interval = 0;
+
          if (Interval_String != nullptr){
                 interval = std::stoi(Interval_String);
             }
         //Solve
- 
+
 while (energy() > stop_energy) {
     step();
-   
-    
+
+
   if (interval > 0 && fmod(sim_time()+0.002, interval) < 0.004) {
         auto check_file_name = std::format("chk-{:07.2f}.wo", sim_time());
         write(check_file_name.c_str());
@@ -226,4 +226,3 @@ while (energy() > stop_energy) {
         };
     }
 };
-

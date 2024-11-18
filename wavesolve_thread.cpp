@@ -20,7 +20,7 @@ int main(int argc, char **argv)
         print("Usage: ", argv[0], " infile outfile");
         print("Read a wave from infile, solve it, and write it to outfile.");
 
-    }; 
+    };
 
     // Parse
     if (argc > 1 && (std::string(argv[1]) == std::string("-h") || std::string(argv[1]) == std::string("--help"))) {
