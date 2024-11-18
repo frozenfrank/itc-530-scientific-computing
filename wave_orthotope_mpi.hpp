@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <mpl/mpl.hpp>
+#include <mpi.h>
 
 #include "binary_io.hpp"
 
@@ -146,11 +147,22 @@ public:
 
     void step() {
 
-        //int nrow = displacement(size();
-        //int ncol = displacement(0].size();
+        /*
+        this is where I'll split the work between processes.
+        I'll give each process a number of rows roughly based on nrows/nprocesses
+        But each process will also need access to the row above and beneath it
+        so I'll make sure to give each process the additional rows it needs. 
 
-        //cout << "step" << endl;
+        Then the processes will split and perform the calculations on their rows (MPI_Scatter)
+        Once all processes have finished their work, they'll put their rows back together (MPI_Gather)
+        If I just make sure that put together matrix is put back into velocity and displacement,
+        I should be able to repeat this process for every required step.
+        */
 
+        int rows_per_process = nrow / 
+
+
+        /*
         double L = 0.0;
 
         for (int i=1; i<nrow-1; i++) {
@@ -170,6 +182,7 @@ public:
 
             }
         }
+        */
 
     }
 
