@@ -130,7 +130,7 @@ public:
     // Done Fixing //
 
 
-    double energy()
+    virtual double energy()
     {
         //implimented from Julia code
 
@@ -171,7 +171,7 @@ public:
 
 
 
-    void step()
+    virtual void step()
     {
         // implimented from Julia code
 

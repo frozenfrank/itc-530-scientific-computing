@@ -107,6 +107,7 @@ class wavesolvethreaded: public WaveOrthotope {
                 auto [first, last] = this_thread_cell_range(tid);
                 auto gfirst = tid==0 ? 1 : first;
                 auto glast  = tid==nthreads-1 ? last-1 : last;
+                double L;
                 for (size_t i = gfirst; i<glast; ++i)
                 {
                 for (size_t j = 1; j<cols-1; ++j)
@@ -153,7 +154,7 @@ class wavesolvethreaded: public WaveOrthotope {
     }
 
     // Iterate from t to t+dt in one step
-    value_type step() override {
+    void step() override {
         // Let threads know what the time step this iteration is
         iter_dt = dt;
 
@@ -172,6 +173,5 @@ class wavesolvethreaded: public WaveOrthotope {
 
         // Increment and return dt
         t += dt;
-        return t;
     }
 };
