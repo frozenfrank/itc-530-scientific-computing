@@ -1,5 +1,5 @@
 #include <iostream>
-#include "WaveOrthotope.hpp"
+#include "wavesolvethreaded.hpp"
 
 
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     // Run Solver
     try {
         // Read from infile
-        auto m = WaveOrthotope(infile);
+        auto m = wavesolvethreaded(infile);
         print("Successfully read ", infile);
 
         // Solve
