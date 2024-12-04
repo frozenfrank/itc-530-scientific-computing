@@ -15,6 +15,19 @@ if(MPI_CXX_FOUND)
     target_link_libraries(wavesolve_mpi PRIVATE mpl::mpl)
 endif()
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL NVHPC)
+    message("-- Found nvc++, will build wavesolve_gpu")
+    set(NVCXX_COMPUTE_CAPABILITY "60" CACHE STRING "nvc++ GPU compute capability")
+    set(NVCXX_CPU_ARCHITECTURE "haswell" CACHE STRING "CPU architecture that nvc++ will compile for")
+    add_executable(wavesolve_gpu wavesolve_gpu.cpp)
+    target_compile_options(wavesolve_gpu PRIVATE
+                           "-tp=${NVCXX_CPU_ARCHITECTURE}" "-stdpar=gpu" "-gpu=sm_${NVCXX_COMPUTE_CAPABILITY}")
+    target_link_options(   wavesolve_gpu PRIVATE
+                           "-tp=${NVCXX_CPU_ARCHITECTURE}" "-stdpar=gpu" "-gpu=sm_${NVCXX_COMPUTE_CAPABILITY}")
+else()
+    message("-- Did not find nvc++, won't build wavesolve_gpu")
+endif()
+
 add_executable(wavesolve_serial wavesolve_serial.cpp binary_io.hpp wave_orthotope.hpp)
 add_executable(wavesolve_openmp wavesolve_openmp.cpp binary_io.hpp wave_orthotope.hpp)
 target_link_libraries(wavesolve_openmp PRIVATE OpenMP::OpenMP_CXX)
