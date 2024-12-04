@@ -1,6 +1,7 @@
 
 #include "wave_orthotope.hpp"
 #include "binary_io.hpp"
+#include <numeric>
 
 using namespace std;
 
@@ -17,15 +18,13 @@ public:
 
         //cout << "step" << endl;
 
-        double L = 0.0;
+        //double L = 0.0;
 
         //#pragma omp parallel for private(L)
         for (int i=1; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
-                L = (displacement(i-1, j) + displacement(i+1, j) + displacement(i, j-1) + displacement(i, j+1)) / 2.0 - 2.0 * displacement(i, j);
-
-                velocity(i, j) = (1.0 - dt * wc) * velocity(i, j) + dt * L;
+                velocity(i, j) = (1.0 - dt * wc) * velocity(i, j) + dt *  ((displacement(i-1, j) + displacement(i+1, j) + displacement(i, j-1) + displacement(i, j+1)) / 2.0 - 2.0 * displacement(i, j));
 
             }
         }
