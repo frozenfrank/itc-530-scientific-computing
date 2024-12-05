@@ -2,6 +2,8 @@
 #include "wave_orthotope.hpp"
 #include "binary_io.hpp"
 #include <numeric>
+#include <algorithm>
+#include <execution>
 
 using namespace std;
 
@@ -21,12 +23,45 @@ public:
         //double L = 0.0;
 
         //#pragma omp parallel for private(L)
+        /*
         for (int i=1; i<nrow-1; i++) {
             for (int j=1; j<ncol-1; j++) {
 
                 velocity(i, j) = (1.0 - dt * wc) * velocity(i, j) + dt *  ((displacement(i-1, j) + displacement(i+1, j) + displacement(i, j-1) + displacement(i, j+1)) / 2.0 - 2.0 * displacement(i, j));
 
             }
+        }
+        */
+
+        //cout << "step" << endl;
+
+        double* wv_ptr = wv_inline.data();
+        double* wu_ptr = wu_inline.data();
+
+        std::transform(std::execution::par_unseq, 
+                    wv_ptr+ncol+1, //start at [1,1]
+                    wv_ptr+(nrow*ncol)-ncol-1, //finish diagonal up one in the bottom right
+                    wv_ptr+ncol+1, //writing starts at the same position
+                    [=, dt = this->dt, wc = this->wc, ncol = this->ncol, nrow = this->nrow](double vnew) {
+
+                        int current_index = &vnew - wv_ptr;
+                        int i = current_index / ncol; //works because it essentially rounds down to the row it's working.
+                        int j = current_index % ncol; //gets the remainder
+
+                        if (i>0 && j > 0 && i<nrow-1 && j < ncol-1) { //skip the edges
+
+                            return (1.0 - dt * wc) * wv_ptr[i*ncol+j] + dt *  ((wu_ptr[(i-1)*ncol+j] + wu_ptr[(i+1)*ncol+j] + wu_ptr[i*ncol+j-1] + wu_ptr[i*ncol+j+1] ) / 2.0 - 2.0 * wu_ptr[i*ncol+j]);
+
+                        } else {
+
+                        return vnew;
+                        }
+
+                    });
+
+
+        for (int i=0; i<wv_inline.size(); i++){
+            wv_inline[i] = wv_ptr[i];
         }
 
         //#pragma omp parallel for
@@ -77,6 +112,8 @@ public:
 
             }
         }
+
+        //cout << E << endl;
 
         return E;
     }
