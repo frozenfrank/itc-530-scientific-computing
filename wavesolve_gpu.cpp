@@ -50,9 +50,9 @@ public:
                     [dt=dt, wc=wc, wv=wv_inline.data(),wu=wu_inline.data(), ncol=ncol, nrow=nrow](auto ij) {
 
                         auto [i,j] = ij;
+                        auto I = i*ncol+j;
 
-                        wv[i*ncol+j] = (1.0 - dt * wc) * wv[i*ncol+j] + dt *  ((wu[(i-1)*ncol+j] + wu[(i+1)*ncol+j] + wu[i*ncol+j-1] + wu[i*ncol+j+1] ) / 2.0 - 2.0 * wu[i*ncol+j]);
-
+                        wv[I] = (1.0 - dt * wc) * wv[I] + dt *  ((wu[I-ncol] + wu[I+ncol] + wu[I-1] + wu[I+1] ) / 2.0 - 2.0 * wu[I]);
 
                     });
 
