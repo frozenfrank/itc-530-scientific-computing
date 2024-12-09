@@ -4,6 +4,10 @@
 #include <numeric>
 #include <algorithm>
 #include <execution>
+#include <cstdint>
+#include <cmath>
+
+#include "cartesian_product.hpp"
 
 using namespace std;
 
@@ -11,7 +15,11 @@ class waveorthotope_gpu : public waveorthotope {
 
 public:
 
-
+    auto two_d_range(size_t first_x, size_t last_x, size_t first_y, size_t last_y) {
+        auto range = std::views::cartesian_product(std::views::iota(first_x, last_x),
+                                                std::views::iota(first_y, last_y));
+        return std::array{range.begin(), range.end()};
+    }
 
     void step() {
 
@@ -33,36 +41,21 @@ public:
         }
         */
 
-        //cout << "step" << endl;
+        auto [first, last] = two_d_range(1, nrow-1, 1, ncol-1);
 
-        double* wv_ptr = wv_inline.data();
-        double* wu_ptr = wu_inline.data();
 
-        std::transform(std::execution::par_unseq, 
-                    wv_ptr+ncol+1, //start at [1,1]
-                    wv_ptr+(nrow*ncol)-ncol-1, //finish diagonal up one in the bottom right
-                    wv_ptr+ncol+1, //writing starts at the same position
-                    [=, dt = this->dt, wc = this->wc, ncol = this->ncol, nrow = this->nrow](double vnew) {
+        std::for_each(std::execution::par_unseq,
+                    first,
+                    last,
+                    [dt=dt, wc=wc, wv=wv_inline.data(),wu=wu_inline.data(), ncol=ncol, nrow=nrow](auto ij) {
 
-                        int current_index = &vnew - wv_ptr;
-                        int i = current_index / ncol; //works because it essentially rounds down to the row it's working.
-                        int j = current_index % ncol; //gets the remainder
+                        auto [i,j] = ij;
 
-                        if (i>0 && j > 0 && i<nrow-1 && j < ncol-1) { //skip the edges
+                        wv[i*ncol+j] = (1.0 - dt * wc) * wv[i*ncol+j] + dt *  ((wu[(i-1)*ncol+j] + wu[(i+1)*ncol+j] + wu[i*ncol+j-1] + wu[i*ncol+j+1] ) / 2.0 - 2.0 * wu[i*ncol+j]);
 
-                            return (1.0 - dt * wc) * wv_ptr[i*ncol+j] + dt *  ((wu_ptr[(i-1)*ncol+j] + wu_ptr[(i+1)*ncol+j] + wu_ptr[i*ncol+j-1] + wu_ptr[i*ncol+j+1] ) / 2.0 - 2.0 * wu_ptr[i*ncol+j]);
-
-                        } else {
-
-                        return vnew;
-                        }
 
                     });
 
-
-        for (int i=0; i<wv_inline.size(); i++){
-            wv_inline[i] = wv_ptr[i];
-        }
 
         //#pragma omp parallel for
         for (int i=1; i<nrow-1; i++) {
@@ -74,6 +67,7 @@ public:
         }
 
     }
+
 
     double energy(){
 
@@ -173,5 +167,3 @@ int main(int argc, char* argv[]){
 
     return 0;
 }
-
-
